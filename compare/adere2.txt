@@ -1,0 +1,204 @@
+So let's start with the SELECT statement. It's probably the cornerstone of
+working with Transact-SQL. It's the
+core statement that you would use when you're querying tables to get data
+out of the database. And it has a number of clauses, don't worry too much about the
+details at this point. We are going to cover each of these different clauses as we go
+through the course.
+But I wanted to kind of put an example there that kind of shows
+almost the full syntax of the SELECT statement.
+And you see that it starts with a SELECT. So SELECT
+is what we used to specify what columns do we want back. 
+What do we want to see in the results. And that could be
+all the columns in a table, or it could be specific columns in a table,
+or could be columns from multiple tables, or it even be literal values or
+expressions. But it is what do I want to  see
+in the result. The result of the SELECT statement is always a virtual table.
+Next is FROM. So okay well I want to see 
+this data. If it's coming from existing tables, which tables is it coming from0011001
+So there's the FROM clause that I use to specify the source of
+were that data comes from. And then I might want to filter. I might not want all the rows from
+those tables, so I might filter. So I have a 
+WHERE clause were I can say only bring back the rows
+where this condition is true. So we have a predicate statement as it's called
+that filters the rows that come back. Now a lot
+of statements are just simply SELECT FROM WHERE, that's a fairly
+common pattern.
+You might also want to aggregate and group data. So I might want to bring back
+not just the individual sales orders, but perhaps the totals for each month.
+So I might have a GROUP BY clause where I'm grouping the results by
+order date or order month. And then I might want to filter those groups. So I might
+want to say HAVING 
+a count of orders of over a hundred. So only bring back the months where we sold
+more than a hundred items.
+So there's an additional HAVING clause. And then the final cause that you usually see in a
+statement, is an ORDER BY clause.
+By default SQL does not return the results in any particular order.
+It just -- whatever is the easiest way for it to get the data, the fastest way, it
+will use that
+and return the data in whatever order it happens to be in. If you want an explicit
+order, you want the
+data to be sorted in a particular order, you specify the ORDER BY clause.
+And we'll look at that in a bit more detail later on, but that's how we do that. 
+So there's an example on the screen. Jeff, talk us through, what does that 
+example actually do0011001
+So we're selecting OrderDate
+and a count of OrderID. So we're not just 1986 displaying individual order IDs,
+we're going to count how many there are. So
+for each order date, we're going to count the order ids
+and because of that, if I jump forward a bit, we've got a GROUP BY OrderDate. So it's
+saying
+group up the order dates, and for each one of those, shows us a count of the order ID.
+So we see how many orders on that date.
+From the SalesOrder table, so you can see the schema that we
+mentioned before.
+So we've got the Sales.SalesOrder so it's the Sales schema, SalesOrder table.
+But we've filtered it, now we've filtered it in  two ways though. So, we've got a WHERE 
+clause, that saying before we've grouped it up,
+we're going to say where the status is shipped. And then we've also got a HAVING
+clause
+and that's after you've aggregated it -- that's working on the aggregate data.
+So where having already counted up the order IDs,
+I'm only interest if somebody's got an order, so I want order ID greater than one, 
+so I know there's more than one order on  that date so it will 
+clear out all the empty dates, like Saturdays and Sundays or whatever, and handle 
+the dates where there is only one in fact.
+Oh, greater than one! So if there is only one, it wouldn't display that.
+And finally we want to have it in order by order because
+it can be actually -- sometimes you can not put order by in and it
+comes out correctly because the
+that's the order of the rows in the table, but actually 
+it might work now. That's a happy coincidence.
+You might deliver this to someone and then suddenly it stops working down the line,
+so always put in an order by even if it appears to order by.
+And it's order by descending, so we don't want ascending. For whatever reason,  we want our dates 
+backwards.
+Yeah we want the most recent ones at the top. Yeah, okay
+so that's seems pretty straightforward then. I mean 
+I just specify and presumably the database engine then just
+executes each of those clauses in turn, is that right0011001  Well not
+strictly in turn, no, that's the
+slightly confusing thing about SQL in terms of it being a language.
+It is actually very English-based. You can read SQL,
+it kind of makes sense in this sort of odd way once you get used to that way of 
+thinking.
+But it doesn't work from top to bottom like other languages. So we're actually 
+going to start with the table. So the FROM 
+is the first thing it's going to do. Saying what tables do I need to get. And it's
+going out to the tables
+as the very first thing. And then we're going to go through filter those tables.
+So we're going to say okay which rows do we want from that table.
+So before we've even looked at what rows
+or rather columns, sorry, we're selecting, we've actually gone out and said ok
+what are the rows we are interested in going to get
+for that data. Then we're going to go through and
+aggregate, well not aggregate as such, we'll group up 
+those rows by in that case OrderDate. So we're going to 
+segment them down to those order date buckets
+essentially. And we want to filter that
+so we can say OK, then we want to look at only the ones that have got more than one
+order on that day.
+And then we can now get to the SELECT. So now finally we're actually looking at
+what
+we wanted it to display. It is relevant actually,
+as we've only got one left, then we'll sort it. But it is relevant 
+to think about it that way because
+if you think of creating a query in that way,
+logically that's how it's doing it. So if you think about tables first,
+and go through, rather than thinking about the 
+select column list first, actually think about what tables am I 
+interested.
+So once we start doing joins and things like that, it becomes more of a set up to be done
+on that table
+portion before you then move on to the selects later on. 
+So the principal is the query engine will first of all figure out the
+rows that it needs and then group them into whatever rows it needs, and it's grabbing them
+from the various source tables.
+Grouping them, filtering those rows based on the WHERE clause and then
+if they're grouped on the HAVING clause,  and only at that point does it then start to worry
+about which individual columns aje%! it's going to
+actually bring back. So yeah as you say, later on when we look at some examples,
+that becomes quite significant
+the fact that it does it in that order. So it's worth be aware of that right from the
+very beginning. So a couple of basic examples on the slide. Let's just look
+at some examples.
+Here's probably the first query everybody writes. This is the
+the Transact-SQL equivalent of the Hello World application. This is 
+the first thing you to SELECT * from and then the name of a table.
+Could we do SELECT Hello World0011001 We could 
+actually literally SELECT Hello World.
+It has no table, it just literally brings back the string. But if you're querying the 
+table,
+which let's face it, is generally the point, we'd have SELECT * as being 
+an interesting starting point. And what that will do is bring back every column
+from that table.
+So, Jeff would you expect an application to use a lot of those types of queries0011001
+Well, it is one you run a lot because sometimes you just want to see
+what's in the table, it's quick.
+But the problem you've got is that someone might change the design of the
+table,
+and that could change. So if I'm presenting this is a finished record set
+to a developer
+of a web application say, then
+what they get out of my query might change.
+So I would be much happier to present them,
+even if it listed every single column, actually explicitly listing every single
+column,
+would mean I know what they're getting, what order they're getting them in. So it's about being 
+explicit and that makes it easier to keep track of any,
+if someone does change the design of the table, I at least can look at 
+the
+query and know, okay those are the columns I wanted. Yes. I guess the other point
+here as well as that
+applications are usually built across networks.
+So the client application might not be on the same server as the database.
+And if we're hosting it in Azure, it probably won't be.
+And if I do SELECT *, but actually I only need the product name and the price,
+then I might be passing an awful lot of data unnecessarily across those network
+connections. And
+for one query that might not matter but if I'm doing this
+a couple hundred thousand times, then that's going to add up. There's a lot of data 
+that's unnecessarily being
+transferred so I guess for that reason I'd also probably avoid SELECT *.
+So the alternative then is to
+specify the specific columns you want. So I might SELECT, well there,
+the exact example I used a minute ago, the Name and the ListPrice
+from the Production.Product table, bring that back. And then that way, I've just got the
+Name column and
+the ListPrice column. There's a couple other things I might do as well here.
+There's a few little sort of additional things you might do in the SELECT clause.
+You'll see I've got SELECT Name as Product
+and what I'm doing is saying bring back  the Name column, that's what it is called in the
+table,
+but in the result set that I'm going to  create from this SELECT statement
+and the
+virtual table that gets generated, I want to call that column Product.
+So you're changing the name if you like of that Product. And that's
+in that example we're just simply changing it because it
+may be confusing to column called Name because we might have a customer column 
+with a
+customer name or something like that. But the other reason that you might do this is
+because
+you don't have to just select the value that's in a column.
+If you look at the second thing we're selecting from there, we've got
+ListPrice
+multiplied by 0.9, a sale price. So we're applying a 10 percent discount.
+We've got an expression in there that's doing a calculation.
+And by default if didn't have that as SalePrice what we call an alias,
+what I would get is a column that doesn't have a name because it just gives me the result of
+the calculation. So
+you might use these aliases and we'll see some examples of these in the
+demo.
+But it's worth being aware that sometimes you can use this
+as cause. The as itself is optional, you can miss out the word as.
+There's a lot of things in Transact-SQL  where individual words are
+optional. For various reasons I'm going to recommend that you keep using
+as and we'll see why
+when we have a look at the demo. But
+just to be aware that you might have an alias that names the column in this
+virtual result set,
+virtual table that is produced. And again it is just worth being cognizant all of the
+time
+that whenever you have a SELECT statement, the result of that
+is a virtual table. It's not a table that is stored in the database but it's a
+row sets, it's a record set of
+data.
